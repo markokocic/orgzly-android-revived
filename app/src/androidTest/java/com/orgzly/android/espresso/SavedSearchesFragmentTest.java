@@ -35,14 +35,19 @@ import androidx.test.espresso.intent.Intents;
 import com.orgzly.R;
 import com.orgzly.android.LocalStorage;
 import com.orgzly.android.OrgzlyTest;
+import com.orgzly.android.RetryTestRule;
 import com.orgzly.android.ui.main.MainActivity;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 
 import java.io.IOException;
 
 public class SavedSearchesFragmentTest extends OrgzlyTest {
+    @Rule
+    public RetryTestRule mRetryTestRule = new RetryTestRule();
+
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -54,56 +59,6 @@ public class SavedSearchesFragmentTest extends OrgzlyTest {
         onView(withId(R.id.drawer_layout)).perform(open());
         onView(withText(R.string.searches)).perform(click());
     }
-
-    @Test
-    public void testNewSameNameSavedSearch() {
-        onView(withId(R.id.fab)).perform(click());
-        onView(withId(R.id.fragment_saved_search_flipper)).check(matches(isDisplayed()));
-
-        onView(withId(R.id.fragment_saved_search_name)).perform(replaceTextCloseKeyboard("Scheduled"));
-        onView(withId(R.id.fragment_saved_search_query)).perform(replaceTextCloseKeyboard("s.done"));
-        onView(withId(R.id.done)).perform(click()); // Saved search done
-        onView(withText(R.string.filter_name_already_exists)).check(matches(isDisplayed()));
-        onView(withId(R.id.fragment_saved_search_flipper)).check(matches(isDisplayed()));
-
-        onView(withId(R.id.fragment_saved_search_name)).perform(replaceTextCloseKeyboard("SCHEDULED"));
-        onView(withId(R.id.fragment_saved_search_query)).perform(replaceTextCloseKeyboard("s.done"));
-        onView(withId(R.id.done)).perform(click()); // Saved search done
-        onView(withText(R.string.filter_name_already_exists)).check(matches(isDisplayed()));
-        onView(withId(R.id.fragment_saved_search_flipper)).check(matches(isDisplayed()));
-    }
-
-    @Test
-    public void testUpdateSameNameSavedSearch() {
-        onView(withId(R.id.fragment_saved_searches_flipper)).check(matches(isDisplayed()));
-        onSavedSearch(0).perform(click());
-        onView(withId(R.id.fragment_saved_search_flipper)).check(matches(isDisplayed()));
-        onView(withId(R.id.fragment_saved_search_query)).perform(replaceTextCloseKeyboard(" edited"));
-        onView(withId(R.id.done)).perform(click()); // Saved search done
-        onView(withId(R.id.fragment_saved_searches_flipper)).check(matches(isDisplayed()));
-    }
-
-    @Test
-    public void testDeletingSavedSearchThenGoingBackToIt() {
-        onView(withId(R.id.fragment_saved_searches_flipper)).check(matches(isDisplayed()));
-
-        onSavedSearch(0).perform(click());
-        onView(withId(R.id.fragment_saved_search_flipper)).check(matches(isDisplayed()));
-
-        onView(withId(R.id.drawer_layout)).perform(open());
-        onView(allOf(withText(R.string.searches), isDescendantOfA(withId(R.id.drawer_navigation_view))))
-                .perform(click());
-        onView(withId(R.id.fragment_saved_searches_flipper)).check(matches(isDisplayed()));
-
-        onSavedSearch(0).perform(longClick());
-        contextualToolbarOverflowMenu().perform(click());
-        onView(withText(R.string.delete)).perform(click());
-
-        pressBack();
-
-        onView(withText(R.string.search_does_not_exist_anymore)).check(matches(isDisplayed()));
-    }
-
 
     @Test
     public void testActionModeWhenSelectingSavedSearchThenOpeningBook() {

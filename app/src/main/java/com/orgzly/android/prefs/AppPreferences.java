@@ -484,6 +484,12 @@ public class AppPreferences {
         getDefaultSharedPreferences(context).edit().putString(key, value).apply();
     }
 
+    public static long calendarSyncSearchId(Context context) {
+        return Long.parseLong(getDefaultSharedPreferences(context).getString(
+                context.getResources().getString(R.string.pref_key_calendar_sync_search),
+                context.getResources().getString(R.string.pref_default_calendar_sync_search)));
+    }
+
     public static boolean ignoreSystemLocale(Context context) {
         return getDefaultSharedPreferences(context).getBoolean(
                 context.getResources().getString(R.string.pref_key_ignore_system_locale),
@@ -1048,7 +1054,10 @@ public class AppPreferences {
     }
     
     public static String defaultRepositoryStorageDirectory(Context context) {
-        File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+        // Use app-specific external storage to avoid EPERM from FUSE on public external storage
+        // (Android 11+ FUSE layer for public dirs doesn't support O_EXCL used by JGit)
+        File externalFilesDir = context.getExternalFilesDir(null);
+        File path = externalFilesDir != null ? externalFilesDir : context.getFilesDir();
         return getStringFromSelector(
                 context, R.string.pref_key_git_default_repository_directory, path.toString());
     }
@@ -1250,6 +1259,13 @@ public class AppPreferences {
     public static void settingsExportAndImportNoteId(Context context, String value) {
         String key = context.getResources().getString(R.string.pref_key_note_id_for_settings_export_and_import);
         getDefaultSharedPreferences(context).edit().putString(key, value).apply();
+    }
+
+    public static Boolean isDefaultToAdvancedQueryEnabled(Context context) {
+        return getDefaultSharedPreferences(context).getBoolean(
+            context.getResources().getString(R.string.pref_key_default_advanced_search),
+            context.getResources().getBoolean(R.bool.pref_default_default_advanced_search)
+        );
     }
 
     /*

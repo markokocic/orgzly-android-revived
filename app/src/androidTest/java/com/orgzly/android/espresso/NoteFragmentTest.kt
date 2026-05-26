@@ -31,7 +31,6 @@ import com.orgzly.android.RetryTestRule
 import com.orgzly.android.espresso.util.EspressoUtils
 import com.orgzly.android.espresso.util.EspressoUtils.clickClickableSpan
 import com.orgzly.android.espresso.util.EspressoUtils.clickSetting
-import com.orgzly.android.espresso.util.EspressoUtils.closeSoftKeyboardWithDelay
 import com.orgzly.android.espresso.util.EspressoUtils.listViewItemCount
 import com.orgzly.android.espresso.util.EspressoUtils.onActionItemClick
 import com.orgzly.android.espresso.util.EspressoUtils.onBook
@@ -368,7 +367,7 @@ class NoteFragmentTest : OrgzlyTest() {
             activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
         }
 
-        onView(withText(R.string.set)).perform(closeSoftKeyboardWithDelay(), click())
+        onView(withText(R.string.set)).perform(click())
         onView(withId(R.id.scheduled_button))
                 .check(matches(withText(startsWith(defaultDialogUserDate()))))
     }
@@ -380,7 +379,6 @@ class NoteFragmentTest : OrgzlyTest() {
                 .check(matches(allOf(withText(userDateTime("[2014-01-01 Wed 20:07]")), isDisplayed())))
         onView(withId(R.id.state_button)).perform(click())
         onView(withText(R.string.clear)).perform(click())
-        SystemClock.sleep(500)
         onView(withId(R.id.closed_button)).check(matches(not(isDisplayed())))
     }
 
@@ -535,7 +533,6 @@ class NoteFragmentTest : OrgzlyTest() {
         onView(withId(R.id.content)).perform(click())
         onView(withId(R.id.content_edit)).perform(typeTextIntoFocusedView("a\nb\nc"))
         onView(withId(R.id.done)).perform(click()) // Note done
-        SystemClock.sleep(1000)
         onNoteInBook(1, R.id.item_head_fold_button).perform(click())
         onNoteInBook(1, R.id.item_head_title_view).check(matches(withText(endsWith("3"))))
     }
